@@ -37,9 +37,10 @@ var clickColor = new Array();
 var clickTool = new Array();
 var clickSize = new Array();
 var clickDrag = new Array();
+var clickText = new Array();
 var paint = false;
 var curColor = colorPurple;
-var curTool = "crayon";
+var curTool = "text";
 var curSize = "normal";
 var mediumStartX = 18;
 var mediumStartY = 19;
@@ -58,8 +59,9 @@ sizeHotspotWidthObject.huge = 39;
 sizeHotspotWidthObject.large = 25;
 sizeHotspotWidthObject.normal = 18;
 sizeHotspotWidthObject.small = 16;
-var totalLoadResources = 8
+var totalLoadResources = 8;
 var curLoadResNum = 0;
+
 /**
 * Calls the redraw function after all neccessary resources are loaded.
 */
@@ -170,7 +172,7 @@ function prepareCanvas()
 				else
 				{
 					if(mouseY < toolHotspotStartY + toolHotspotHeight){
-						curTool = "crayon";
+						curTool = "text";
 					}else if(mouseY < toolHotspotStartY + toolHotspotHeight * 2){
 						curTool = "marker";
 					}else if(mouseY < toolHotspotStartY + toolHotspotHeight * 3){
@@ -202,7 +204,7 @@ function prepareCanvas()
 	
 	$('#canvas').mouseleave(function(e){
 		paint = false;
-	});
+	});	
 }
 
 /**
@@ -219,6 +221,7 @@ function addClick(x, y, dragging)
 	clickColor.push(curColor);
 	clickSize.push(curSize);
 	clickDrag.push(dragging);
+	clickText.push(document.textform.texttowrite.value);
 }
 
 /**
@@ -243,7 +246,7 @@ function redraw()
 	
 	var locX;
 	var locY;
-	if(curTool == "crayon")
+	if(curTool == "crayon" || curTool == "text")
 	{
 		// Draw the crayon tool background
 		context.drawImage(crayonBackgroundImage, 0, 0, canvasWidth, canvasHeight);
@@ -429,9 +432,19 @@ function redraw()
 	{
 		context.drawImage(eraserBackgroundImage, 0, 0, canvasWidth, canvasHeight);
 		context.drawImage(eraserImage, 18, 19, mediumImageWidth, mediumImageHeight);	
-	}else{
+	}
+	else{
 		alert("Error: Current Tool is undefined");
 	}
+	
+	// Prepareing the text edit
+	if(curTool == "text")
+	{
+		document.textform.style.display="block";
+	}else{
+		document.textform.style.display="none";
+	}
+	
 	
 	if(curSize == "small"){
 		locX = 467;
@@ -454,6 +467,8 @@ function redraw()
 	context.beginPath();
 	context.rect(drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
 	context.clip();
+	
+	
 		
 	var radius;
 	var i = 0;
@@ -472,27 +487,39 @@ function redraw()
 			radius = 0;	
 		}
 		
-		context.beginPath();
-		if(clickDrag[i] && i){
-			context.moveTo(clickX[i-1], clickY[i-1]);
-		}else{
-			context.moveTo(clickX[i], clickY[i]);
-		}
-		context.lineTo(clickX[i], clickY[i]);
-		context.closePath();
-		
-		if(clickTool[i] == "eraser"){
-			//context.globalCompositeOperation = "destination-out"; // To erase instead of draw over with white
-			context.strokeStyle = 'white';
-		}else{
-			//context.globalCompositeOperation = "source-over";	// To erase instead of draw over with white
+		if(clickTool[i] == "text")
+		{
+			context.font = (radius*2)+"px 'optimer'";
+			context.textAlign = 'left';
+			context.textBaseline = 'middle';
 			context.strokeStyle = clickColor[i];
+			context.fillText(clickText[i], clickX[i], clickY[i]);
+		}else{
+		
+			context.beginPath();
+			if(clickDrag[i] && i){
+				context.moveTo(clickX[i-1], clickY[i-1]);
+			}else{
+				context.moveTo(clickX[i], clickY[i]);
+			}
+			context.lineTo(clickX[i], clickY[i]);
+			context.closePath();
+		
+			
+			if(clickTool[i] == "eraser"){
+				//context.globalCompositeOperation = "destination-out"; // To erase instead of draw over with white
+				context.strokeStyle = 'white';
+			}else{
+				//context.globalCompositeOperation = "source-over";	// To erase instead of draw over with white
+				context.strokeStyle = clickColor[i];
+			}
+			context.lineJoin = "round";
+			context.lineWidth = radius;
+			context.stroke();
 		}
-		context.lineJoin = "round";
-		context.lineWidth = radius;
-		context.stroke();
 		
 	}
+	
 	//context.globalCompositeOperation = "source-over";// To erase instead of draw over with white
 	context.restore();
 	

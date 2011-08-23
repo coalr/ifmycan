@@ -4,6 +4,7 @@
     <title>HTML5 Create HTML5 Canvas JavaScript Drawing App Example</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
     <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+    <script type="text/javascript" src="canvas.text.js"></script>
     <script type="text/javascript" src="html5-canvas-drawing-app.js"></script>
   </head>
   <body>
@@ -11,5 +12,11 @@
     <script type="text/javascript"> $(document).ready(function() {
     	 prepareCanvas();
 });</script>
+
+	<form name="textform" action="">
+	Text: <input type="text" size="50" name="texttowrite">
+	
+	<br><small>Click into image to place text.</small>
+	</form>
   </body>
 </html>
