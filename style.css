@@ -1,0 +1,90 @@
+*{
+	margin:0;
+	-webkit-user-select: none;
+}
+
+html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0px;
+  font-size:20px;
+  font-family: Verdana;
+}
+
+#bgimage{
+	position:absolute;
+	z-index: -1;
+}
+
+#canvasholder{
+	position:absolute;
+}
+canvas{
+	cursor: crosshair;
+	border: 1px solid black;
+	float:left;
+	
+}
+ 
+#textinput{
+	background-color: lightgrey;
+    border: 1px solid black;
+    padding: 8px;
+    position: absolute;
+    right: 125px;
+}
+
+input{
+	font-size:20px;
+}
+
+#toolbar {
+	background-color:white;
+    height: 100%;
+    width: 100px;
+    position: absolute;
+    right: 0px;
+}
+
+#preview {
+	background-color:white;
+    height: 100px;
+    width: 100%;
+    position: absolute;
+   	bottom: 0px;
+}
+
+#toolbar a{
+	font-size:20px;
+	text-decoration:none;
+	background:lightgray;
+	border: 1px solid black;
+	color:black;
+	padding:5px;
+	margin: 2px;
+	width: 80px;
+	display:block;
+}
+
+#clr div{
+	border: 1px solid black;
+	cursor:pointer;
+	cursor:hand;
+	height:25px;
+	padding:5px;
+	margin: 2px;
+	width: 80px;
+	display:block;
+}
+
+.highlight{
+	position: relative;
+	left: -20px;
+}
+
+img{
+ height:100px;
+ width:100px;
+ background:none;
+}
+
