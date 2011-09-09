@@ -1,6 +1,5 @@
 *{
 	margin:0;
-	-webkit-user-select: none;
 }
 
 html, body {
@@ -22,8 +21,7 @@ html, body {
 canvas{
 	cursor: crosshair;
 	border: 1px solid black;
-	float:left;
-	
+	z-index: 1;
 }
  
 #textinput{
@@ -32,6 +30,7 @@ canvas{
     padding: 8px;
     position: absolute;
     right: 125px;
+    z-index: 3;
 }
 
 input{

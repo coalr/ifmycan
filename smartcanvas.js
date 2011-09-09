@@ -13,7 +13,7 @@ var clickSizeundo = new Array();
 var clickDragundo = new Array();
 var clickTextundo = new Array();
 var paint = false;
-var curColor = "green";
+var curColor = "red";
 var curTool = "pen";
 var ctx;
 var canvas;
@@ -38,6 +38,11 @@ $(document).ready(function() {
 
 		ctx.lineWidth = 15;
 		ctx.lineCap = "round";
+		
+		// prepare everything
+		$("#textinput").hide();
+		$("#pen").addClass("highlight");
+		$("#red").addClass("highlight");
         
 		//code for color pallete
 		$("#clr > div").click(
@@ -52,7 +57,7 @@ $(document).ready(function() {
         //Texttool
 		$("#text").click(function(){
 			curTool = "text";
-			document.textform.style.display="block";
+			$("#textinput").show();
 			$("#toolbar > a").each(function(){
 				$(this).removeClass("highlight");
 			});
@@ -60,7 +65,7 @@ $(document).ready(function() {
 		});
 		$("#pen").click(function(){
 			curTool = "pen";
-			document.textform.style.display="none";
+			$("#textinput").hide();
 			$("#toolbar > a").each(function(){
 				$(this).removeClass("highlight");
 			});
@@ -69,7 +74,7 @@ $(document).ready(function() {
         //Eraser
 		$("#eraser").click(function(){
 			curTool = "eraser";
-			document.textform.style.display="none";
+			$("#textinput").hide();
 			$("#toolbar > a").each(function(){
 				$(this).removeClass("highlight");
 			});
@@ -78,7 +83,7 @@ $(document).ready(function() {
 
 		//Code for save the image
 		$("#save").click(function(){ 
-			document.textform.style.display="none";
+			$("#textinput").hide();
 			$("#result").html('<br /><br /><img src='+canvas.toDataURL()+' /><br /><a href="#" id="get">&nbsp;Download</a>');
 			$("#data").val(canvas.toDataURL());
 			$("#get").click(function(){
@@ -153,7 +158,7 @@ function addClick(x, y, dragging){
 
 function redraw(){
 		
-	var radius = 10;
+	var radius = 20;
 	var i = 0;
 	// Clearing the canvas
 	canvas.width = canvas.width;
@@ -161,6 +166,7 @@ function redraw(){
 	for(; i < clickX.length; i++)
 	{		
 	
+		ctx.lineWidth = radius;
 		if(clickTool[i] == "text")
 		{
 			ctx.font = (radius*2)+"px 'optimer'";
@@ -176,18 +182,6 @@ function redraw(){
 			ctx.globalCompositeOperation = "destination-out"; // To erase instead of draw over with white
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}else{
-			ctx.beginPath();
-			if(clickDrag[i] && i){
-				ctx.moveTo(clickX[i-1], clickY[i-1]);
-				ctx.lineTo(clickX[i], clickY[i]);
-				ctx.arc(clickX[i], clickY[i], 0.2, 0, Math.PI * 2, false);
-			}else{
-				ctx.moveTo(clickX[i], clickY[i]);
-				ctx.arc(clickX[i], clickY[i], radius/10, 0, Math.PI * 2, false);
-			}
-			ctx.fill();
-			ctx.closePath();
-		
 			
 			if(clickTool[i] == "eraser"){
 				ctx.strokeStyle = "rgba(255,255,255,1.0)";
@@ -198,8 +192,35 @@ function redraw(){
 				ctx.fillStyle = clickColor[i];
 				ctx.strokeStyle = clickColor[i];
 			}
-			ctx.lineJoin = "round";
-			ctx.lineWidth = radius;
+			
+			
+			if(clickDrag[i] && i){
+				ctx.beginPath();
+				ctx.moveTo(clickX[i-1], clickY[i-1]);
+				ctx.lineTo(clickX[i], clickY[i]);
+				ctx.lineWidth = radius;
+				ctx.closePath();
+				ctx.fill();
+				ctx.stroke();
+				
+				ctx.beginPath();
+				ctx.lineWidth = radius/2;
+				ctx.arc(clickX[i], clickY[i], radius/4, 0, Math.PI * 2, true);
+				ctx.closePath();
+				ctx.fill();
+				ctx.stroke();
+			}else{
+				
+				ctx.beginPath();
+				ctx.moveTo(clickX[i], clickY[i]);
+				ctx.lineWidth = radius/2;
+				ctx.arc(clickX[i], clickY[i], radius/4, 0, Math.PI * 2, true);
+				ctx.closePath();
+				ctx.fill();
+				ctx.stroke();
+			}
+			
+			ctx.fill();
 			ctx.stroke();
 		}
 		

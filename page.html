@@ -14,21 +14,21 @@
 			<img id="slide"
 				src="http://speakingpowerpoint.files.wordpress.com/2011/05/slide9.jpg" />
 		</div>
+		<div id="textinput">
+			<form name="textform" action="">
+				Text: <input type="text" maxlength="200" size="50" name="texttowrite" value="Mytext" />
+			</form>
+		</div>
 		<div id="canvasholder">
 			<canvas id="canvas"> </canvas>
 		</div>
 
-		<div id="textinput">
-			<form name="textform" action="" style="display: none">
-				Text: <input type="text" size="100" name="texttowrite"
-					value="Write here">
-			</form>
-		</div>
+		
 		<div id="toolbar">
 			<div id="clr">
 				<div style="background-color: black;"></div>
 				<div style="background-color: white;"></div>
-				<div style="background-color: red;"></div>
+				<div id="red" style="background-color: red;"></div>
 				<div style="background-color: green;"></div>
 				<div style="background-color: blue;"></div>
 				<div style="background-color: orange;"></div>
