@@ -10,6 +10,8 @@ html, body {
   font-family: Verdana;
 }
 
+input[type=text] {-webkit-touch-callout:auto; -webkit-user-select:auto }
+
 #bgimage{
 	position:absolute;
 	z-index: -1;

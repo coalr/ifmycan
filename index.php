@@ -1,22 +1,26 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+
 <title>Canvas and Jquery</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
+	src="jquery.min.js"
 	type="text/javascript"></script>
+<script src="jquery.watermarkinput.js" type="text/javascript"></script>
 <script type="text/javascript" src="smartCanvas.js"></script>
 </head>
-<body>
+<body ontouchmove="BlockMove(event);">
 	<div id="wrapper">
 		<div id="bgimage">
 			<img id="slide"
 				src="http://speakingpowerpoint.files.wordpress.com/2011/05/slide9.jpg" />
 		</div>
 		<div id="textinput">
-			<form name="textform" action="">
-				Text: <input type="text" maxlength="200" size="50" name="texttowrite" value="Mytext" />
+			<form name="textform">
+				Text: <input id="textinput1" type="text" maxlength="200" size="50" name="texttowrite" />
 			</form>
 		</div>
 		<div id="canvasholder">
@@ -50,7 +54,9 @@
 			</form>
 
 		</div>
-		<div id="preview"></div>
+		<div id="preview">
+		<a href="#" id="load">Load</a> 
+		</div>
 	</div>
 </body>
 </html>

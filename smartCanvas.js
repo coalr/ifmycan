@@ -17,6 +17,8 @@ var curColor = "red";
 var curTool = "pen";
 var ctx;
 var canvas;
+var ImagePostToURL = "";
+var ImageGetFromURL = "http://4.bp.blogspot.com/_79SognVSu7A/TOKralENPII/AAAAAAAACIM/CHmTrpjErvs/s1600/Pie%2BChart.png";
 
 $(document).ready(function() {
 
@@ -39,8 +41,15 @@ $(document).ready(function() {
 		ctx.lineWidth = 15;
 		ctx.lineCap = "round";
 		
-		// prepare everything
+		// prepare textinput field 
+		$("#textinput1").Watermark("Write here. Then tap on chart to place text.");
+		
+		$('#textinput').submit(function() {
+			  return false;
+		});
 		$("#textinput").hide();
+			
+		// Select the default colors and tools
 		$("#pen").addClass("highlight");
 		$("#red").addClass("highlight");
         
@@ -81,25 +90,13 @@ $(document).ready(function() {
 			$(this).addClass("highlight");
 		});
 
-		//Code for save the image
-		$("#save").click(function(){ 
-			$("#textinput").hide();
-			$("#result").html('<br /><br /><img src='+canvas.toDataURL()+' /><br /><a href="#" id="get">&nbsp;Download</a>');
-			$("#data").val(canvas.toDataURL());
-			$("#get").click(function(){
-					$("#frm").trigger('submit');
-	       });
-		});
-        
 		//Clear 
 		$("#clear").click(function(){
+			prevTool = curTool;
 			curTool = "clear";
 			addClick(0, 0, false);
 			redraw();
-			$("#toolbar > a").each(function(){
-				$(this).removeClass("highlight");
-			});
-			$(this).addClass("highlight");
+			curTool = prevTool;
 		});
 		
 		//UndoClear 
@@ -114,9 +111,33 @@ $(document).ready(function() {
 			redraw();
 		});
 		
+		//Code for save the image
+		$("#save").click(function(){ 
+			$("#textinput").hide();
+			//$("#result").html('<br /><br /><img src='+canvas.toDataURL()+' /><br /><a href="#" id="get">&nbsp;Download</a>');
+			var strDataURI = canvas.toDataURL();
+			$("#data").val(canvas.toDataURL());
+			$.post(ImagePostToURL, { imageData: strDataURI },
+				function(data) {
+				alert("Image saved: " + data);
+			});
+		});
+		
+		//Load Slide
+		$("#load").click(function(){
+			
+			LoadImage();
+			//$("#bgimage").attr("src", ImageGetFromURL);
+			/*$.get(ImageGetFromURL, function(data){ 
+			    $('#bgimage').html(data);
+			    $("#slide").fullBg();
+			});*/
+		});
+		
+		
 		// Add mouse events
 		// ----------------
-		$('#canvas').mousedown(function(e){
+		/*$('#canvas').mousedown(function(e){
 			paint = true;
 			var mouseX = e.pageX - this.offsetLeft;
 			var mouseY = e.pageY - this.offsetTop;
@@ -138,7 +159,38 @@ $(document).ready(function() {
 		
 		$('#canvas').mouseleave(function(e){
 			paint = false;
-		});	
+		});	*/
+		
+		
+		$('#canvas').live('touchstart',function(e){
+			//e.preventDefault();
+			paint = true;
+			var mouseX = e.originalEvent.touches[0].pageX - this.offsetLeft;
+			var mouseY = e.originalEvent.touches[0].pageY - this.offsetTop;
+			addClick(mouseX, mouseY, false);
+			redraw();
+		});
+		
+		$('#canvas').live('touchmove',function(e){
+			//e.preventDefault();
+			//alert("Hello"+e.targetTouches[0].pageX);
+			if(paint==true){
+				addClick(e.originalEvent.touches[0].pageX - this.offsetLeft, e.originalEvent.touches[0].pageY - this.offsetTop, true);
+				redraw();
+			}
+		});
+		
+		$('#canvas').live('touchend',function(e){
+			//e.preventDefault();
+			paint = false;
+		  	redraw();
+		});
+		
+		$('#canvas').live('ontouchcancel',function(e){
+			//e.preventDefault();
+			paint = false;
+		});		
+		
 });
 
 /**
@@ -158,7 +210,7 @@ function addClick(x, y, dragging){
 
 function redraw(){
 		
-	var radius = 20;
+	var radius = 6;
 	var i = 0;
 	// Clearing the canvas
 	canvas.width = canvas.width;
@@ -169,6 +221,7 @@ function redraw(){
 		ctx.lineWidth = radius;
 		if(clickTool[i] == "text")
 		{
+			var radius = 15;
 			ctx.font = (radius*2)+"px 'optimer'";
 			ctx.textAlign = 'left';
 			ctx.textBaseline = 'middle';
@@ -184,10 +237,12 @@ function redraw(){
 		}else{
 			
 			if(clickTool[i] == "eraser"){
+				var radius = 15;
 				ctx.strokeStyle = "rgba(255,255,255,1.0)";
 				ctx.globalCompositeOperation = "destination-out"; // To erase instead of draw over with white
 				ctx.strokeStyle = 'white';
 			}else{
+				var radius = 6;
 				ctx.globalCompositeOperation = "source-over";	// To erase instead of draw over with white
 				ctx.fillStyle = clickColor[i];
 				ctx.strokeStyle = clickColor[i];
@@ -233,11 +288,25 @@ function redraw(){
 
 (function($) {
   $.fn.fullBg = function(){
-    var bgImg = $(this);		
+	
+	var img = $(this);	
  
     function resizeImg() {
-      var imgwidth = bgImg.width();
-      var imgheight = bgImg.height();
+    	
+    	 // Safari calculates size after loading.
+        var pic_real_width, pic_real_height;
+        $("<img/>") // Make in memory copy of image to avoid css issues
+            .attr("src", $(img).attr("src"))
+            .load(function() {
+                pic_real_width = this.width;   // Note: $(this).width() will not
+                pic_real_height = this.height; // work for in memory images.
+            });
+      //$(img).load();
+    	
+//      var imgwidth = pic_real_width;
+//      var imgheight = pic_real_height;
+      var imgwidth = img.width();
+      var imgheight = img.height();
  
       var winwidth = $(window).width()-100;
       var winheight = $(window).height()-100;
@@ -247,14 +316,14 @@ function redraw(){
  
       var widthdiff = heightratio * imgwidth;
       var heightdiff = widthratio * imgheight;
- 
+     
       if(heightdiff<winheight) {
-        bgImg.css({
+        img.css({
           width: winwidth+'px',
           height: heightdiff+'px'
         });
       } else {
-        bgImg.css({
+        img.css({
           width: widthdiff+'px',
           height: winheight+'px'
         });		
@@ -265,4 +334,44 @@ function redraw(){
       resizeImg();
     }); 
   };
-})(jQuery)
+})(jQuery);
+
+
+function BlockMove(event) {
+  // Tell Safari not to move the window.
+	event.preventDefault() ;
+}
+
+function LoadImage(){
+	var img = new Image();
+	  
+   // wrap our new image in jQuery, then:
+   $(img)
+    // once the image has loaded, execute this code
+    .load(function () {
+      // set the image hidden by default    
+      $(this).hide();
+    
+      // with the holding div #loader, apply:
+      $('#bgimage')
+        // remove the loading class (so no background spinner), 
+        .removeClass('loading')
+        // then insert our image
+        .html(this);
+    
+      // fade our image in to create a nice effect
+      $(this).fadeIn();
+    })
+    
+    // if there was an error loading the image, react accordingly
+    .error(function () {
+      // notify the user that the image could not be loaded
+    })
+    
+    // *finally*, set the src attribute of the new image to our image
+    .attr('src', ImageGetFromURL)
+    .attr('id', 'slide')
+    .fullBg()
+    ;
+}
+
